@@ -1,13 +1,14 @@
+# isaaccancele/repl.py
+
 from isaaccancele.lexer import Lexer
-from isaaccancele.tokens import (
-    Token,
-    TokenType
-)
-EOF_TOKEN=Token(TokenType.EOF, '')
+from isaaccancele.parser import Parser
+from isaaccancele.ast import Program
 
 def start_repl():
-    while (source:=input(">> "))!="exit":
-        lexer=Lexer(source)
+    while (source := input(">> ")) != "exit":
+        lexer = Lexer(source)
+        parser = Parser(lexer)
+        program: Program = parser.parse_program()
 
-        while (token:=lexer.next_token())!=EOF_TOKEN:
-            print(token)
+        for stmt in program.statements:
+            print(stmt.token_literal(), stmt.__class__.__name__)
