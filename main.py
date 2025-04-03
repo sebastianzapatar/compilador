@@ -6,3 +6,5 @@ def main()->None:
 
 if __name__=="__main__":
     main()
+    saludos=["Hola", "Isaac","No","vuelva 😢"]
+    

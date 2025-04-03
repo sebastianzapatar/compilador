@@ -39,7 +39,6 @@ class Lexer:
 
         self.read_char()  # ¡Esto es clave para evitar el ciclo infinito!
         return token
-
     def skip_whitespace(self) -> None:
         while match(r"^\s$", self.character):
             self.read_char()
