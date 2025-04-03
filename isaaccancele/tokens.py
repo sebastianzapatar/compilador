@@ -10,6 +10,8 @@ class TokenType(Enum):
     ASSIGN = auto()
     COMMA = auto()
     EOF=auto()
+    EQ=auto()
+    FOR=auto()
     FUNCTION=auto()
     IDENT=auto()
     ILLEGAL=auto()
@@ -27,4 +29,10 @@ class Token(NamedTuple):
     literal: str
     def __str__(self)->str:
         return f"Token({self.token_type}, {self.literal})"
+def lookup_token_type(literal:str)->TokenType:
+    keyword={'function':TokenType.FUNCTION,
+             'let':TokenType.LET,
+             'for':TokenType.FOR
+            }
+    return keyword.get(literal,TokenType.IDENT)
         
