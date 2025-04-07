@@ -11,3 +11,17 @@ def start_repl():
         result = eval_node(program)
         if result:
             print(result.inspect())
+"""
+from isaaccancele.lexer import Lexer
+from isaaccancele.parser import Parser
+
+while True:
+    source = input(">> ")
+    if source == "exit":
+        break
+    lexer = Lexer(source)
+    parser = Parser(lexer)
+    program = parser.parse_program()
+    print(program)
+
+"""
