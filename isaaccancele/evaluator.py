@@ -38,6 +38,9 @@ def eval_program(program: Program):
     result = None
     for stmt in program.statements:
         result = eval_node(stmt)
+        if result is not None:
+            print(result.inspect())
+        result = eval_node(stmt)
     return result
 
 def eval_prefix_expression(operator: str, right):
