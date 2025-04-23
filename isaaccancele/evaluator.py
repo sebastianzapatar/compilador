@@ -33,6 +33,14 @@ def eval_node(node):
     elif isinstance(node, Identifier):
         # Acceder a variables previamente definidas
         return environment.get(node.value, None)
+    elif isinstance(node, WhileStatement):
+        return eval_while_statement(node)
+    elif isinstance(node, ForStatement):
+        return eval_for_statement(node)
+    elif isinstance(node, AssignStatement):
+        value = eval_node(node.value)
+        environment[node.name.value] = value
+        return value
 
 def eval_program(program: Program):
     result = None
@@ -115,3 +123,16 @@ def is_truthy(obj):
     if isinstance(obj, Integer):
         return obj.value != 0
     return True
+def eval_while_statement(stmt):
+    result = None
+    while is_truthy(eval_node(stmt.condition)):
+        result = eval_node(stmt.body)
+    return result
+
+def eval_for_statement(stmt):
+    eval_node(stmt.init)
+    result = None
+    while is_truthy(eval_node(stmt.condition)):
+        result = eval_node(stmt.body)
+        eval_node(stmt.post)
+    return result

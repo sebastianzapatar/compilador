@@ -39,11 +39,82 @@ class Parser:
         return program
 
     
+    def _parse_for_statement(self):
+        token = self.current_token  # 'for'
+
+        if not self._expect_peek(TokenType.LPAREN):
+            return None
+
+        self._advance()  # Ahora estamos en la inicialización
+
+        # INIT: puede ser let o asignación
+        if self.current_token.token_type == TokenType.LET:
+            init = self._parse_let_statement()
+        elif self.current_token.token_type == TokenType.IDENT and self.peek_token.token_type == TokenType.ASSIGN:
+            init = self._parse_assign_statement()
+        else:
+            self.errors.append(f"Expected init statement in 'for', got {self.current_token.token_type}")
+            return None
+
+        if not self._expect_peek(TokenType.SEMICOLON):
+            return None
+        self._advance()  # Pasamos al inicio de la condición
+
+        condition = self.parse_expression(0)
+
+        if not self._expect_peek(TokenType.SEMICOLON):
+            return None
+        self._advance()  # Pasamos al post
+
+        # POST: también puede ser let o asignación
+        if self.current_token.token_type == TokenType.LET:
+            post = self._parse_let_statement()
+        elif self.current_token.token_type == TokenType.IDENT and self.peek_token.token_type == TokenType.ASSIGN:
+            post = self._parse_assign_statement()
+        else:
+            self.errors.append(f"Expected post statement in 'for', got {self.current_token.token_type}")
+            return None
+
+        if self.current_token.token_type != TokenType.RPAREN:
+            if not self._expect_peek(TokenType.RPAREN):
+                return None
+
+        if not self._expect_peek(TokenType.LBRACE):
+            return None
+
+        body = self._parse_block_statement()
+
+        return ForStatement(token, init, condition, post, body)
+
+
+
+
     def parse_statement(self):
         if self.current_token.token_type == TokenType.LET:
             return self._parse_let_statement()
+        if self.current_token.token_type == TokenType.WHILE:
+            return self._parse_while_statement()
+        if self.current_token.token_type == TokenType.FOR:
+            return self._parse_for_statement()
+        if self.current_token.token_type == TokenType.IDENT and self.peek_token.token_type == TokenType.ASSIGN:
+            return self._parse_assign_statement()
         return self.parse_expression_statement()
+        
+    def _parse_assign_statement(self):
+        name = Identifier(self.current_token, self.current_token.literal)
 
+        if not self._expect_peek(TokenType.ASSIGN):
+            return None
+
+        token = self.current_token  # '='
+        self._advance()
+
+        value = self.parse_expression(0)
+
+        if self.peek_token.token_type == TokenType.SEMICOLON:
+            self._advance()
+
+        return AssignStatement(token, name, value)
     def _parse_let_statement(self):
         token = self.current_token  # 'let'
 
@@ -59,9 +130,9 @@ class Parser:
 
         if self.peek_token.token_type == TokenType.SEMICOLON:
             self._advance()
-
+        
         return LetStatement(token, name, value)
-
+        
     def _expect_peek(self, ttype):
         if self.peek_token.token_type == ttype:
             self._advance()
@@ -71,8 +142,13 @@ class Parser:
 
 
     def parse_expression_statement(self):
+        token = self.current_token
         expr = self.parse_expression(0)
-        return ExpressionStatement(self.current_token, expr)
+
+        if self.peek_token.token_type == TokenType.SEMICOLON:
+            self._advance()
+
+        return ExpressionStatement(token, expr)
 
     def parse_expression(self, precedence):
         prefix_fn = self._prefix_parse_fns().get(self.current_token.token_type)
@@ -89,7 +165,21 @@ class Parser:
             self._advance()
             left_expr = infix_fn(left_expr)
         return left_expr
+    def _parse_while_statement(self):
+        token = self.current_token
 
+        if not self._expect_peek(TokenType.LPAREN):
+            return None
+        self._advance()
+        condition = self.parse_expression(0)
+        if not self._expect_peek(TokenType.RPAREN):
+            return None
+
+        if not self._expect_peek(TokenType.LBRACE):
+            return None
+        body = self._parse_block_statement()
+
+        return WhileStatement(token, condition, body)
     def _prefix_parse_fns(self):
         return {
             TokenType.IDENT: self._parse_identifier,

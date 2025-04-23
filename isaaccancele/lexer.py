@@ -67,6 +67,7 @@ class Lexer:
             literal = self._read_literal()
             token_type = lookup_token_type(literal)
             return Token(token_type, literal)
+        
         elif self.character == '':
             return Token(TokenType.EOF, "")
         else:

@@ -122,3 +122,39 @@ class BlockStatement(Statement):
 
     def __str__(self):
         return "{ " + " ".join(str(stmt) for stmt in self.statements) + " }"
+    
+class WhileStatement(Statement):
+    def __init__(self, token, condition, body):
+        self.token = token        # token 'while'
+        self.condition = condition
+        self.body = body          # BlockStatement
+
+    def token_literal(self):
+        return self.token.literal
+
+    def __str__(self):
+        return f"while ({self.condition}) {self.body}"
+class ForStatement(Statement):
+    def __init__(self, token, init, condition, post, body):
+        self.token = token          # 'for'
+        self.init = init            # LetStatement or AssignStatement
+        self.condition = condition  # Expression
+        self.post = post            # Statement
+        self.body = body            # BlockStatement
+
+    def token_literal(self):
+        return self.token.literal
+
+    def __str__(self):
+        return f"for ({self.init}; {self.condition}; {self.post}) {self.body}"
+class AssignStatement(Statement):
+    def __init__(self, token, name, value):
+        self.token = token        # token '='
+        self.name = name          # Identifier
+        self.value = value        # Expression
+
+    def token_literal(self):
+        return self.token.literal
+
+    def __str__(self):
+        return f"{self.name} = {self.value};"

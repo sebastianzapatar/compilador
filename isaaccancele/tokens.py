@@ -34,6 +34,7 @@ class TokenType(Enum):
     RBRACE = auto()
     RPAREN = auto()
     SEMICOLON = auto()
+    WHILE = auto()
 
 class Token(NamedTuple):
     token_type: TokenType
@@ -48,7 +49,8 @@ def lookup_token_type(literal: str) -> TokenType:
         'let': TokenType.LET,
         'if': TokenType.IF,
         'else': TokenType.ELSE,
-        'for': TokenType.FOR
+        'for': TokenType.FOR,
+        'while': TokenType.WHILE,
     }
     return keywords.get(literal, TokenType.IDENT)
     
