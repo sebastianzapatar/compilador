@@ -95,3 +95,30 @@ class InfixExpression(Expression):
 
     def __str__(self):
         return f"({self.left} {self.operator} {self.right})"
+
+class IfExpression(Expression):
+    def __init__(self, token, condition, consequence, alternative):
+        self.token = token
+        self.condition = condition
+        self.consequence = consequence
+        self.alternative = alternative
+
+    def token_literal(self):
+        return self.token.literal
+
+    def __str__(self):
+        out = f"if {self.condition} {self.consequence}"
+        if self.alternative:
+            out += f" else {self.alternative}"
+        return out
+
+class BlockStatement(Statement):
+    def __init__(self, token):
+        self.token = token
+        self.statements = []
+
+    def token_literal(self):
+        return self.token.literal
+
+    def __str__(self):
+        return "{ " + " ".join(str(stmt) for stmt in self.statements) + " }"

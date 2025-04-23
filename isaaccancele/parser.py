@@ -96,6 +96,7 @@ class Parser:
             TokenType.INT: self._parse_integer_literal,
             TokenType.BANG: self._parse_prefix_expression,
             TokenType.MINUS: self._parse_prefix_expression,
+            TokenType.IF: self._parse_if_expression,
         }
 
     def _infix_parse_fns(self):
@@ -143,3 +144,44 @@ class Parser:
 
     def _current_precedence(self):
         return PRECEDENCES.get(self.current_token.token_type, 0)
+
+
+
+    def _parse_if_expression(self):
+        token = self.current_token  # token 'if'
+
+        if not self._expect_peek(TokenType.LPAREN):
+            return None
+        self._advance()
+        condition = self.parse_expression(0)
+        if not self._expect_peek(TokenType.RPAREN):
+            return None
+
+        if not self._expect_peek(TokenType.LBRACE):
+            return None
+        consequence = self._parse_block_statement()
+
+        alternative = None
+        if self.peek_token.token_type == TokenType.ELSE:
+            self._advance()
+            if self.peek_token.token_type == TokenType.IF:
+                self._advance()
+                alternative = self._parse_if_expression()
+            elif self._expect_peek(TokenType.LBRACE):
+                alternative = self._parse_block_statement()
+
+        return IfExpression(token, condition, consequence, alternative)
+
+
+    def _parse_block_statement(self):
+        token = self.current_token
+        block = BlockStatement(token)
+        self._advance()
+
+        while self.current_token.token_type != TokenType.RBRACE and self.current_token.token_type != TokenType.EOF:
+            stmt = self.parse_statement()
+            if stmt:
+                block.statements.append(stmt)
+            self._advance()
+
+        return block

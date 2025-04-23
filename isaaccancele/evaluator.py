@@ -1,3 +1,4 @@
+
 # evaluator.py
 
 from isaaccancele.ast import *
@@ -11,7 +12,6 @@ def eval_node(node):
         return eval_program(node)
     elif isinstance(node, ExpressionStatement):
         return eval_node(node.expression)
-       
     elif isinstance(node, LetStatement):
         # Evaluar la expresión y almacenar en el entorno
         value = eval_node(node.value)
@@ -26,6 +26,10 @@ def eval_node(node):
         left = eval_node(node.left)
         right = eval_node(node.right)
         return eval_infix_expression(node.operator, left, right)
+    elif isinstance(node, IfExpression):
+        return eval_if_expression(node)
+    elif isinstance(node, BlockStatement):
+        return eval_block_statement(node)
     elif isinstance(node, Identifier):
         # Acceder a variables previamente definidas
         return environment.get(node.value, None)
@@ -85,3 +89,26 @@ def eval_integer_infix(operator: str, left: Integer, right: Integer):
     elif operator == "!=":
         return TRUE if left.value != right.value else FALSE
     return None
+
+def eval_if_expression(if_expr):
+    condition = eval_node(if_expr.condition)
+    if is_truthy(condition):
+        return eval_node(if_expr.consequence)
+    elif if_expr.alternative:
+        return eval_node(if_expr.alternative)
+    return None
+
+def eval_block_statement(block):
+    result = None
+    for stmt in block.statements:
+        result = eval_node(stmt)
+    return result
+
+def is_truthy(obj):
+    if obj is None:
+        return False
+    if isinstance(obj, Boolean):
+        return obj.value
+    if isinstance(obj, Integer):
+        return obj.value != 0
+    return True

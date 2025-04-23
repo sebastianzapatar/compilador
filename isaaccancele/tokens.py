@@ -12,6 +12,8 @@ class TokenType(Enum):
     COMMA = auto()
     EOF = auto()
     EQ = auto()
+    IF = auto()
+    ELSE = auto()
     NOT_EQ = auto()
     FOR = auto()
     FUNCTION = auto()
@@ -44,6 +46,9 @@ def lookup_token_type(literal: str) -> TokenType:
     keywords = {
         'function': TokenType.FUNCTION,
         'let': TokenType.LET,
+        'if': TokenType.IF,
+        'else': TokenType.ELSE,
         'for': TokenType.FOR
     }
     return keywords.get(literal, TokenType.IDENT)
+    
