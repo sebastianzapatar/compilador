@@ -26,6 +26,18 @@ class Boolean(Object):
 
     def inspect(self):
         return "true" if self.value else "false"
+class Function(Object):
+    def __init__(self, parameters, body, env):
+        self.parameters = parameters  # lista de Identifiers
+        self.body = body              # BlockStatement
+        self.env = env                # entorno donde fue definida
+
+    def type(self):
+        return "FUNCTION"
+
+    def inspect(self):
+        params = ", ".join(str(p) for p in self.parameters)
+        return f"function({params}) {{ {str(self.body)} }}"
 
 # Constantes globales
 TRUE = Boolean(True)

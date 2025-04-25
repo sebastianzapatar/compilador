@@ -1,7 +1,7 @@
 
 from isaaccancele.lexer import Lexer
 from isaaccancele.parser import Parser
-from isaaccancele.evaluator import eval_node, environment
+from isaaccancele.evaluator import eval_node
 
 def run_file(filename):
     try:

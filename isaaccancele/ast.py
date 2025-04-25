@@ -158,3 +158,28 @@ class AssignStatement(Statement):
 
     def __str__(self):
         return f"{self.name} = {self.value};"
+class FunctionLiteral(Expression):
+    def __init__(self, token, parameters, body):
+        self.token = token            # token 'function'
+        self.parameters = parameters  # lista de Identifiers
+        self.body = body              # BlockStatement
+
+    def token_literal(self):
+        return self.token.literal
+
+    def __str__(self):
+        params = ", ".join(str(p) for p in self.parameters)
+        return f"{self.token_literal()}({params}) {self.body}"
+
+class CallExpression(Expression):
+    def __init__(self, token, function, arguments):
+        self.token = token            # '(' token
+        self.function = function      # Expression (puede ser Identifier o FunctionLiteral)
+        self.arguments = arguments    # lista de Expressions
+
+    def token_literal(self):
+        return self.token.literal
+
+    def __str__(self):
+        args = ", ".join(str(a) for a in self.arguments)
+        return f"{self.function}({args})"
